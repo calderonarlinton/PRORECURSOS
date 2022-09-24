@@ -10,6 +10,19 @@ app.get('/api/signup', (req: Request, res: Response) => {
   `);
 });
 
+app.get('/api/signup/:document', (req: Request, res: Response) => {
+  const { document } = req.params;
+  const database: Record<string, string> = {
+    "123": "Yordan",
+    "234": "Leicy",
+  };
+
+  res.send(`
+    <h1>Hola mundo, ${database[document] ?? 'Desconocido'}</h1>
+    <a href="/api/signout">Cerrar sesión</a>
+  `);
+});
+
 app.get('/api/signout', (req: Request, res: Response) => {
   res.send('<h1>Adios mundo</h1>');
 });
