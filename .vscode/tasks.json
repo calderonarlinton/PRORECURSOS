@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "dev",
+			"path": "auth-service",
+			"problemMatcher": [],
+			"group": "build",
+			"label": "npm: dev - auth-service",
+			"detail": "Start auth-service on DevMode"
+		}
+	]
+}
