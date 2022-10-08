@@ -1,13 +1,29 @@
 import express, {Request, Response} from 'express';
+import { MongooseConnection } from './db/mongoose';
+import { BadRequestError, DatabaseConnectionError } from '@angelgoezg/common';
+import * as dotenv from 'dotenv'
+
+import { User } from './models/users';
+
+dotenv.config();
 
 const app = express();
-const PORT = 8081;
+const PORT = parseInt(process.env.SERVER_PORT!);
 
-app.get('/api/signup', (req: Request, res: Response) => {
-  res.send(`
-    <h1>Hola mundo</h1>
-    <a href="/api/signout">Cerrar sesión</a>
-  `);
+app.get('/api/signup', async (req: Request, res: Response) => {
+  try {
+    const user = new User({
+      name: "Arlinton Calderon",
+      pwd: "12345",
+      username: "adcalderon",
+      email: "arlinton_calderon23171@elpoli.edu.co",
+      userType: "ADMIN",
+    });
+    await user.save();
+    res.status(201).send({user});
+  } catch (error: any) {
+    throw new BadRequestError(error.message);
+  }
 });
 
 app.get('/api/signup/:document', (req: Request, res: Response) => {
@@ -37,6 +53,12 @@ app.all('*', (req: Request, res: Response) => {
   res.status(404).send('<h1>Recurso no encontrado</h1>');
 });
 
-app.listen(PORT, () => {
-  console.log(`auth-service is up and running on port ${PORT}`);
+app.listen(PORT, async () => {
+  try {
+    const connection = await MongooseConnection.connect();
+    console.log(connection);
+    console.log(`auth-service is up and running on port ${PORT}`);
+  } catch (error) {
+    throw new DatabaseConnectionError();
+  }
 });
