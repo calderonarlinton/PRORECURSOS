@@ -1,26 +1,34 @@
 import express, {Request, Response} from 'express';
 import { MongooseConnection } from './db/mongoose';
-import { BadRequestError, DatabaseConnectionError } from '@angelgoezg/common';
+import { BadRequestError, DatabaseConnectionError, errorHandler } from '@angelgoezg/common';
 import * as dotenv from 'dotenv'
+import 'express-async-errors';
 
 import { User } from './models/users';
 
 dotenv.config();
 
 const app = express();
+app.use(express.json());
+
 const PORT = parseInt(process.env.SERVER_PORT!);
 
-app.get('/api/signup', async (req: Request, res: Response) => {
+app.post('/api/signup', async (req: Request, res: Response) => {
   try {
-    const user = new User({
-      name: "Arlinton Calderon",
-      pwd: "12345",
-      username: "adcalderon",
-      email: "arlinton_calderon23171@elpoli.edu.co",
-      userType: "ADMIN",
-    });
+    const user = new User(req.body);
     await user.save();
     res.status(201).send({user});
+  } catch (error: any) {
+    throw new BadRequestError(error.message);
+  }
+});
+
+app.post('/api/signin', async (req: Request, res: Response) => {
+  try {
+    const {email, pwd} = req.body;
+    const user = await User.findUserByCredentials(email, pwd);
+    const token = await user.generateAuthToken();
+    res.send({token});
   } catch (error: any) {
     throw new BadRequestError(error.message);
   }
@@ -52,6 +60,8 @@ app.get('/api/message', (req: Request, res: Response) => {
 app.all('*', (req: Request, res: Response) => {
   res.status(404).send('<h1>Recurso no encontrado</h1>');
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, async () => {
   try {

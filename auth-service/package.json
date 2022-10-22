@@ -13,13 +13,16 @@
   "license": "ISC",
   "dependencies": {
     "@angelgoezg/common": "^2.0.8",
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
+    "express-async-errors": "^3.1.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.5",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.14",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.8.3"
